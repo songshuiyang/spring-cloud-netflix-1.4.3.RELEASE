@@ -63,24 +63,33 @@ import org.springframework.context.annotation.Import;
  * @author Dave Syer
  * @author Biju Kunjummen
  */
-@Configuration
-@Import({ RibbonCommandFactoryConfiguration.RestClientRibbonConfiguration.class,
+@Configuration // 声明是配置类
+@Import({ RibbonCommandFactoryConfiguration.RestClientRibbonConfiguration.class, // 引入RibbonCommandFactory配置
 		RibbonCommandFactoryConfiguration.OkHttpRibbonConfiguration.class,
 		RibbonCommandFactoryConfiguration.HttpClientRibbonConfiguration.class,
 		HttpClientConfiguration.class })
-@ConditionalOnBean(ZuulProxyMarkerConfiguration.Marker.class)
+@ConditionalOnBean(ZuulProxyMarkerConfiguration.Marker.class) // 条件2 存在ZuulProxyMarkerConfiguration.Marker.class bean, 即应用使用@EnableZuulProxy注解
 public class ZuulProxyAutoConfiguration extends ZuulServerAutoConfiguration {
 
 	@SuppressWarnings("rawtypes")
 	@Autowired(required = false)
 	private List<RibbonRequestCustomizer> requestCustomizers = Collections.emptyList();
 
+	/**
+	 * 网关服务注册实例信息
+	 */
 	@Autowired(required = false)
 	private Registration registration;
 
+	/**
+	 * 服务发现客户端
+	 */
 	@Autowired
 	private DiscoveryClient discovery;
 
+	/**
+	 * serviceId和路由的映射逻辑
+	 */
 	@Autowired
 	private ServiceRouteMapper serviceRouteMapper;
 
@@ -90,6 +99,10 @@ public class ZuulProxyAutoConfiguration extends ZuulServerAutoConfiguration {
 				ZuulProxyAutoConfiguration.class);
 	}
 
+	/**
+	 * 静态和动态路由寻址: 静态从配置文件获取, 动态通过服务发现客户端完成. 后者优先级更高
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnMissingBean(DiscoveryClientRouteLocator.class)
 	public DiscoveryClientRouteLocator discoveryRouteLocator() {
@@ -158,6 +171,9 @@ public class ZuulProxyAutoConfiguration extends ZuulServerAutoConfiguration {
 
 	}
 
+	/**
+	 * 添加 Endpoint
+	 */
 	@Configuration
 	@ConditionalOnClass(Endpoint.class)
 	protected static class EndpointConfiguration {

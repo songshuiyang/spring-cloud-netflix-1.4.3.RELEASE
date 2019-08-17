@@ -71,12 +71,12 @@ import com.netflix.zuul.monitoring.TracerFactory;
  * @author Dave Syer
  * @author Biju Kunjummen
  */
-@Configuration
-@EnableConfigurationProperties({ ZuulProperties.class })
-@ConditionalOnClass(ZuulServlet.class)
-@ConditionalOnBean(ZuulServerMarkerConfiguration.Marker.class)
+@Configuration // 声明是配置类
+@EnableConfigurationProperties({ ZuulProperties.class }) // 激活 zuul配置
+@ConditionalOnClass(ZuulServlet.class) // 条件1 存在ZuulServlet.class
+@ConditionalOnBean(ZuulServerMarkerConfiguration.Marker.class) // 条件2 存在ZuulServerMarkerConfiguration.Marker.class bean, 即应用使用@EnableZuulServer注解
 // Make sure to get the ServerProperties from the same place as a normal web app would
-@Import(ServerPropertiesAutoConfiguration.class)
+@Import(ServerPropertiesAutoConfiguration.class) // 配置ServerProperties实例
 public class ZuulServerAutoConfiguration {
 
 	@Autowired
@@ -107,6 +107,11 @@ public class ZuulServerAutoConfiguration {
 				this.zuulProperties);
 	}
 
+	/**
+	 * zuulController, 包装了一个ZuulServlet类型的servlet, 实现对ZuulServlet类型的servlet的初始化.
+	 *
+	 * @return
+	 */
 	@Bean
 	public ZuulController zuulController() {
 		return new ZuulController();
@@ -249,5 +254,4 @@ public class ZuulServerAutoConfiguration {
 		}
 
 	}
-
 }
