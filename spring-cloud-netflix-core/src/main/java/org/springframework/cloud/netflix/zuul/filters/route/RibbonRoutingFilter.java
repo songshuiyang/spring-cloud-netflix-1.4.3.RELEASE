@@ -107,8 +107,11 @@ public class RibbonRoutingFilter extends ZuulFilter {
 		RequestContext context = RequestContext.getCurrentContext();
 		this.helper.addIgnoredHeaders();
 		try {
+			// 根据RequestContext封装为一个Ribbon请求命名对象，里面有请求链接及请求参数
 			RibbonCommandContext commandContext = buildCommandContext(context);
+			// 执行请求
 			ClientHttpResponse response = forward(commandContext);
+			// 设置请求结果
 			setResponse(response);
 			return response;
 		}
@@ -120,6 +123,12 @@ public class RibbonRoutingFilter extends ZuulFilter {
 		}
 	}
 
+	/**
+	 * 封装参数
+	 *
+	 * @param context
+	 * @return
+	 */
 	protected RibbonCommandContext buildCommandContext(RequestContext context) {
 		HttpServletRequest request = context.getRequest();
 
@@ -155,6 +164,7 @@ public class RibbonRoutingFilter extends ZuulFilter {
 
 		RibbonCommand command = this.ribbonCommandFactory.create(context);
 		try {
+			// 执行请求
 			ClientHttpResponse response = command.execute();
 			this.helper.appendDebug(info, response.getRawStatusCode(), response.getHeaders());
 			return response;
